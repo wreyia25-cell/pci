@@ -1,48 +1,74 @@
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <?php 
-  date_default_timezone_set("Asia/Manila");
-  
-  ob_start();
-  $title = isset($_GET['page']) ? ucwords(str_replace("_", ' ', $_GET['page'])) : "Home";
-  $title = str_replace("Persons Companies","Persons/Companies",$title);
-  ?>
-  <title><?php echo $title ?> | <?php echo $_SESSION['system']['name'] ?></title>
-  <?php ob_end_flush() ?>
+<?php
+// header.php
 
-  <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="assets/plugins/fontawesome-free/css/all.min.css">
-  <!-- overlayScrollbars -->
-  <link rel="stylesheet" href="assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
-    <!-- DataTables -->
-  <link rel="stylesheet" href="assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-  <link rel="stylesheet" href="assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-  <link rel="stylesheet" href="assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
-   <!-- Select2 -->
-  <link rel="stylesheet" href="assets/plugins/select2/css/select2.min.css">
-  <link rel="stylesheet" href="assets/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
-   <!-- SweetAlert2 -->
-  <link rel="stylesheet" href="assets/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
-  <!-- Toastr -->
-  <link rel="stylesheet" href="assets/plugins/toastr/toastr.min.css">
-  <!-- dropzonejs -->
-  <link rel="stylesheet" href="assets/plugins/dropzone/min/dropzone.min.css">
-  <!-- DateTimePicker -->
-  <link rel="stylesheet" href="assets/dist/css/jquery.datetimepicker.min.css">
-  <!-- iCheck for checkboxes and radio inputs -->
-  <link rel="stylesheet" href="assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-  <!-- Switch Toggle -->
-  <link rel="stylesheet" href="assets/plugins/bootstrap4-toggle/css/bootstrap4-toggle.min.css">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="assets/dist/css/adminlte.min.css">
-  <link rel="stylesheet" href="assets/dist/css/styles.css">
-	<script src="assets/plugins/jquery/jquery.min.js"></script>
-  <!-- jQuery UI 1.11.4 -->
-  <script src="assets/plugins/jquery-ui/jquery-ui.min.js"></script>
- <!-- summernote -->
-  <link rel="stylesheet" href="assets/plugins/summernote/summernote-bs4.min.css">
-  
+include('admin/database_connection.php');
+session_start();
+
+if (!isset($_SESSION["teacher_id"])) {
+    header('location:login.php');
+    exit();
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Student Attendance System</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/dataTables.bootstrap4.min.css">
+
+    <!-- jQuery + Bootstrap JS -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- DataTables JS -->
+    <script src="js/jquery.dataTables.min.js"></script>
+    <script src="js/dataTables.bootstrap4.min.js"></script>
+
+    <style>
+        /* Consistent style with admin header */
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+        .navbar-nav .nav-link {
+            padding: 0.6rem 1rem;
+        }
+        .jumbotron-small {
+            background: #f8f9fa;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .jumbotron-small h1 {
+            font-size: 1.8rem;
+            margin: 0;
+            color: #343a40;
+        }
+    </style>
 </head>
+<body>
+
+<div class="jumbotron-small text-center">
+    <h1>📚 Student Attendance System</h1>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="index.php">🏠 Home</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNavbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item"><a class="nav-link" href="profile.php">👤 Profile</a></li>
+            <li class="nav-item"><a class="nav-link" href="attendance.php">🗓 Attendance</a></li>
+        </ul>
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="logout.php">🚪 Logout</a></li>
+        </ul>
+    </div>
+</nav>

@@ -1,43 +1,44 @@
 <?php
+include('./admin/database_connection.php');
 session_start();
-include 'db_connect.php';
 
-if(!isset($_SESSION['teacher_id'])) exit("Not authorized");
+if (isset($_POST['grade_id']) && $_POST['grade_id'] != '') {
+  $query = "
+    SELECT student_id, student_name, student_roll_number 
+    FROM tbl_student 
+    WHERE student_grade_id = :grade_id
+    ORDER BY student_name ASC
+  ";
+  $statement = $connect->prepare($query);
+  $statement->execute([':grade_id' => $_POST['grade_id']]);
+  $students = $statement->fetchAll();
 
-$teacher_id = $_SESSION['teacher_id'];
-
-if(!isset($_POST['class_id'])) exit("Class ID not provided.");
-
-$class_id = intval($_POST['class_id']);
-
-// Verify teacher access
-$check = $conn->query("SELECT * FROM teacher_class WHERE teacher_id='$teacher_id' AND class_id='$class_id'");
-if($check->num_rows == 0){
-    echo '<tr><td colspan="7" class="text-danger text-center">You are not assigned to this class.</td></tr>';
-    exit;
-}
-
-// Fetch students
-$students = $conn->query("SELECT id, firstname, middlename, lastname FROM students WHERE class_id='$class_id' ORDER BY firstname");
-if($students->num_rows > 0){
-    while($row = $students->fetch_assoc()){
-        $student_id = $row['id'];
-        echo "<tr>
-                <td>
-                    <div class='d-flex align-items-center'>
-                        <div class='student-avatar'>".strtoupper($row['firstname'][0])."</div>
-                        ".htmlspecialchars($row['firstname'].' '.$row['middlename'].' '.$row['lastname'])."
-                    </div>
-                </td>
-                <td class='text-center'><input type='radio' name='rating[$student_id]' value='Excellent'></td>
-                <td class='text-center'><input type='radio' name='rating[$student_id]' value='Very Good'></td>
-                <td class='text-center'><input type='radio' name='rating[$student_id]' value='Good'></td>
-                <td class='text-center'><input type='radio' name='rating[$student_id]' value='Not Good'></td>
-                <td class='text-center'><input type='radio' name='attendance[$student_id]' value='Present' checked></td>
-                <td class='text-center'><input type='radio' name='attendance[$student_id]' value='Absent'></td>
-              </tr>";
+  if(count($students) > 0) {
+    echo '<table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>Roll No.</th>
+          <th>Student Name</th>
+          <th>Present</th>
+          <th>Absent</th>
+          <th>Leave</th>
+        </tr>
+      </thead>
+      <tbody>';
+    foreach($students as $student) {
+      echo '<tr>
+        <td>'.htmlspecialchars($student["student_roll_number"]).'</td>
+        <td>'.htmlspecialchars($student["student_name"]).'
+          <input type="hidden" name="student_id[]" value="'.htmlspecialchars($student["student_id"]).'" />
+        </td>
+        <td><input type="radio" name="attendance_status'.$student["student_id"].'" value="Present" /></td>
+        <td><input type="radio" name="attendance_status'.$student["student_id"].'" checked value="Absent" /></td>
+        <td><input type="radio" name="attendance_status'.$student["student_id"].'" value="Leave" /></td>
+      </tr>';
     }
-} else {
-    echo "<tr><td colspan='7' class='text-center text-muted'>No students found</td></tr>";
+    echo '</tbody></table>';
+  } else {
+    echo '<div class="alert alert-warning">No students found for this grade.</div>';
+  }
 }
 ?>
